@@ -1,0 +1,3 @@
+include src/plex_music_ratings_sync/config.template.yml
+include LICENSE
+include README.md

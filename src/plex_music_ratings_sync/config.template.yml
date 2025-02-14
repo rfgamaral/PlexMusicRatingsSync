@@ -1,0 +1,11 @@
+plex:
+  # The URL of your Plex server (e.g., http://localhost:32400)
+  url: null
+
+  # Your Plex server authentication token
+  # https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token/
+  token: null
+
+  # List of music library names to sync/export/import ratings
+  libraries:
+    - Music
