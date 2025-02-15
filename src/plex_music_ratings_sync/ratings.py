@@ -1,6 +1,7 @@
 from mutagen.flac import FLAC
 from mutagen.id3 import ID3, POPM
 from mutagen.mp3 import MP3
+from mutagen.mp4 import MP4
 from mutagen.oggopus import OggOpus
 from mutagen.oggvorbis import OggVorbis
 
@@ -245,13 +246,75 @@ def _set_rating_to_vorbis(file_path, plex_rating, file_type):
         log_error(f"▪ Failed to write rating for {file_type} file: {e}", 4)
 
 
+def _get_rating_from_m4a(file_path):
+    """
+    Read rating from an M4A (AAC/ALAC) file's RATE tag. Converts the rating (10-100
+    scale) to Plex's 1-10 scale.
+    """
+    try:
+        audio = MP4(file_path)
+
+        rating_raw = audio.tags.get("rate")
+
+        if rating_raw:
+            m4a_rating = int(
+                rating_raw[0] if isinstance(rating_raw, list) else rating_raw
+            )
+
+            if m4a_rating == 0:
+                rating = None
+            else:
+                rating = max(1, min(10, round(m4a_rating / 10)))
+
+            log_debug(f"▸ Successfully read M4A rating: **{rating}**", 4)
+            return rating
+
+        log_debug("▸ No rating found in M4A file", 4)
+
+        return None
+    except Exception as e:
+        log_error(f"▪ Failed to read rating from M4A file: {e}", 4)
+        return None
+
+
+def _set_rating_to_m4a(file_path, plex_rating):
+    """
+    Write rating to an M4A (AAC/ALAC) file's RATE tag. Converts the Plex rating (1-10
+    scale) to M4A's 10-100 scale.
+    """
+    try:
+        if plex_rating is None or plex_rating == 0:
+            m4a_rating = "0"
+        else:
+            m4a_rating = str(max(10, min(100, plex_rating * 10)))
+
+        log_rating = f"**{plex_rating}** (**{plex_rating / 2}**) ⇒ **{m4a_rating}**"
+
+        if is_dry_run():
+            log_info(
+                f"▸ [dry-run] Would have rated M4A file: {log_rating}",
+                4,
+            )
+        else:
+            audio = MP4(file_path)
+            audio["----:com.apple.iTunes:RATE"] = [m4a_rating.encode("utf-8")]
+            audio.save()
+
+            log_info(f"▸ Successfully rated M4A file: {log_rating}", 4)
+    except Exception as e:
+        log_error(f"▪ Failed to write rating for M4A file: {e}", 4)
+
+
 def get_rating_from_file(file_path):
     """
-    Read rating from a music file based on its extension. Supports MP3, FLAC, OGG,
-    and OPUS files. Returns rating on Plex's 1-10 scale.
+    Read rating from a music file based on its extension. Returns the rating on the 1-10
+    scale used by Plex.
     """
     if file_path.endswith(".mp3"):
         return _get_rating_from_mp3(file_path)
+
+    if file_path.endswith(".m4a"):
+        return _get_rating_from_m4a(file_path)
 
     for ext, file_type in _VORBIS_FORMATS.items():
         if file_path.endswith(ext):
@@ -262,12 +325,14 @@ def get_rating_from_file(file_path):
 
 def set_rating_to_file(file_path, plex_rating):
     """
-    Write rating to a music file based on its extension. Supports:
-    - MP3 (using POPM tag 0-255)
-    - FLAC/OGG/OPUS (using Vorbis Comment RATING tag 0-100)
+    Write rating to a music file based on its extension. Converts the Plex rating to the
+    appropriate format for the file type.
     """
     if file_path.endswith(".mp3"):
         _set_rating_to_mp3(file_path, plex_rating)
+
+    if file_path.endswith(".m4a"):
+        _set_rating_to_m4a(file_path, plex_rating)
 
     for ext, file_type in _VORBIS_FORMATS.items():
         if file_path.endswith(ext):

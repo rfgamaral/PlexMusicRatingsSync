@@ -6,7 +6,7 @@ This tool bridges the gap between Plex Media Server and your audio files, ensuri
 
 - Bidirectional sync between Plex and audio files
 - Import and export ratings between Plex and audio files
-- Supports MP3 (ID3v2), FLAC, OGG, and Opus formats
+- Supports MP3 (ID3v2), FLAC, M4A (AAC/ALAC), OGG, and Opus formats
 - Support for multiple Plex music libraries
 - Compatible with rating schemes from multiple applications
 - Dry-run mode to preview changes without applying them
