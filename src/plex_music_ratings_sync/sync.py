@@ -15,7 +15,7 @@ from plex_music_ratings_sync.ratings import (
 from plex_music_ratings_sync.state import is_dry_run
 from plex_music_ratings_sync.util.datetime import format_time
 
-_SUPPORTED_EXTENSIONS = (".mp3", ".flac")
+_SUPPORTED_EXTENSIONS = (".flac", ".mp3", ".ogg", ".opus")
 """Audio file extensions that are supported for rating synchronization."""
 
 

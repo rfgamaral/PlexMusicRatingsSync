@@ -4,14 +4,13 @@ This tool bridges the gap between Plex Media Server and your audio files, ensuri
 
 ## Features
 
--   Bidirectional sync between Plex and audio files
--   Import and export ratings between Plex and audio files
--   Support for both half-star and full-star ratings
--   Compatible with MP3 (ID3v2) and FLAC audio formats
--   Support for multiple Plex music libraries
--   Compatible with rating schemes from multiple applications
--   Dry-run mode to preview changes without applying them
--   Detailed logging with customizable verbosity levels
+- Bidirectional sync between Plex and audio files
+- Import and export ratings between Plex and audio files
+- Supports MP3 (ID3v2), FLAC, OGG, and Opus formats
+- Support for multiple Plex music libraries
+- Compatible with rating schemes from multiple applications
+- Dry-run mode to preview changes without applying them
+- Detailed logging with customizable verbosity levels
 
 ## User Guide
 
