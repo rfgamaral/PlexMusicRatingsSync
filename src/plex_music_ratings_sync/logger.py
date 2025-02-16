@@ -106,7 +106,7 @@ def init_logging(quiet=None, verbose=None):
     """
     global _logger
 
-    log_dir = Path(get_log_dir())
+    log_dir = get_log_dir()
 
     if not log_dir.exists():
         log_dir.mkdir(parents=True, exist_ok=True)
