@@ -1,6 +1,24 @@
 # CHANGELOG
 
 
+## v1.1.1 (2025-02-16)
+
+### Bug Fixes
+
+- Implement Windows-compatible single instance lock mechanism
+  ([`fb9b204`](https://github.com/rfgamaral/PlexMusicRatingsSync/commit/fb9b204758af97c5e93f2c14b1f56ae6bec18f35))
+
+### Documentation
+
+- Add feature to `README.md` erroneously removed
+  ([`ea969ad`](https://github.com/rfgamaral/PlexMusicRatingsSync/commit/ea969ad0600f7ea2027ef90ada7acdd7300f1002))
+
+### Refactoring
+
+- Remove redundant `Path` conversion from `logger`
+  ([`254b4d0`](https://github.com/rfgamaral/PlexMusicRatingsSync/commit/254b4d022889bf097002b8c03c1b36ac66f591bf))
+
+
 ## v1.1.0 (2025-02-15)
 
 ### Chores
