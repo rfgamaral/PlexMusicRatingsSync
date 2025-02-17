@@ -49,8 +49,10 @@ class RatingSync:
 
         file_path = Path(item.media[0].parts[0].file)
 
+        track_index = item.index if item.index is not None else 0
+
         log_info(
-            f"Track: **{item.index:02d}. {item.title}** __({file_path.name})__",
+            f"Track: **{track_index:02d}. {item.title}** __({file_path.name})__",
             3,
         )
 
