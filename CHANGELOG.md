@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v1.1.3 (2025-02-17)
+
+### Bug Fixes
+
+- Remove logs that were meant for debugging only
+  ([`b40faec`](https://github.com/rfgamaral/PlexMusicRatingsSync/commit/b40faecef49a5cc8d4657482369ff53d84fa12fe))
+
+
 ## v1.1.2 (2025-02-17)
 
 ### Bug Fixes

@@ -6,5 +6,5 @@ APP_DESCRIPTION = (
 )
 """The description of the application."""
 
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 """The version of the application."""
