@@ -20,11 +20,9 @@ def _cleanup_lock():
     """Release the lock and remove the lock file."""
     try:
         if _process_lock.is_locked:
-            print("Releasing process lock.")
             _process_lock.release()
 
         if _process_lock_file.exists():
-            print("Removing process lock file.")
             _process_lock_file.unlink()
     except Exception:
         pass
