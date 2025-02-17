@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## v1.1.2 (2025-02-17)
+
+### Bug Fixes
+
+- Handle missing track index numbers in Plex library
+  ([#4](https://github.com/rfgamaral/PlexMusicRatingsSync/pull/4),
+  [`2e6df6a`](https://github.com/rfgamaral/PlexMusicRatingsSync/commit/2e6df6adef0993e84ffa2811cb77996156135a45))
+
+
 ## v1.1.1 (2025-02-16)
 
 ### Bug Fixes
