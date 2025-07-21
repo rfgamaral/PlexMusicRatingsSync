@@ -1,3 +1,4 @@
+import sys
 from os import getenv
 from pathlib import Path
 
@@ -27,5 +28,10 @@ def get_log_file_path():
 
 
 def get_template_file_path():
-    """Get the path to the config template file."""
-    return Path(__file__).parent.parent / "config.template.yml"
+    """Resolve path to the config template (supports PyInstaller bundles)."""
+    if getattr(sys, 'frozen', False):
+        base_path = Path(sys._MEIPASS)  # PyInstaller temp dir
+    else:
+        base_path = Path(__file__).resolve().parent.parent  # Dev mode
+
+    return base_path / "plex_music_ratings_sync" / "config.template.yml"

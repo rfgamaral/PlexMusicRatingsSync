@@ -151,6 +151,228 @@ docker compose run --rm plex-music-ratings-sync sync
     docker compose run --rm plex-music-ratings-sync export
     ```
 
+### Windows Executable
+
+If you run Plex Server on a Windows computer or even if you run Plex on a NAS and use
+a Windows computer, you may find it easier to run PlexMediaRatingsSync on Windows.
+
+You can use PyInstaller to bundle PlexMusicRatingsSync as a standalone Windows executable.
+
+#### Build Instructions
+
+1. Open Windows Sandbox. (optional)
+1. Run PowerShell.
+1. Allow scripts: `> Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`
+1. Install Scoop: `> Invoke-RestMethod get.scoop.sh | Invoke-Expression`
+    ```
+    Initializing...
+    Downloading...
+    Extracting...
+    Creating shim...
+    Adding ~\scoop\shims to your path.
+    Scoop was installed successfully!
+    Type 'scoop help' for instructions.
+    ```
+1. Install Python: `> scoop install python`
+    ```
+    Installing 'dark' (3.14.1) [64bit] from 'main' bucket
+    dark-3.14.1.zip (5.0 MB) [====================================================================================] 100%
+    Checking hash of dark-3.14.1.zip ... ok.
+    Extracting dark-3.14.1.zip ... done.
+    Linking ~\scoop\apps\dark\current => ~\scoop\apps\dark\3.14.1
+    Creating shim for 'dark'.
+    'dark' (3.14.1) was installed successfully!
+    Installing 'python' (3.13.5) [64bit] from 'main' bucket
+    python-3.13.5-amd64.exe (27.5 MB) [===========================================================================] 100%
+    Checking hash of python-3.13.5-amd64.exe ... ok.
+    Running pre_install script...done.
+    Running installer script...
+       [ NOTE: THIS WILL TAKE MINUTES. ]
+    Linking ~\scoop\apps\python\current => ~\scoop\apps\python\3.13.5
+    Creating shim for 'python3'.
+    Creating shim for 'idle'.
+    Creating shim for 'idle3'.
+    Adding ~\scoop\apps\python\current\Scripts to your path.
+    Adding ~\scoop\apps\python\current to your path.
+    Persisting Scripts
+    Persisting Lib\site-packages
+    Running post_install script...
+    done.
+    'python' (3.13.5) was installed successfully!
+    Notes
+    -----
+    Allow applications and third-party installers to find python by running:
+    "C:\Users\WDAGUtilityAccount\scoop\apps\python\current\install-pep-514.reg"
+    ```
+1. Install PyInstaller: `> python -m pip install pyinstaller`
+    ```
+    Collecting pyinstaller
+      Downloading pyinstaller-6.14.2-py3-none-win_amd64.whl.metadata (8.3 kB)
+    Collecting setuptools>=42.0.0 (from pyinstaller)
+      Downloading setuptools-80.9.0-py3-none-any.whl.metadata (6.6 kB)
+    Collecting altgraph (from pyinstaller)
+      Downloading altgraph-0.17.4-py2.py3-none-any.whl.metadata (7.3 kB)
+    Collecting pefile!=2024.8.26,>=2022.5.30 (from pyinstaller)
+      Downloading pefile-2023.2.7-py3-none-any.whl.metadata (1.4 kB)
+    Collecting pywin32-ctypes>=0.2.1 (from pyinstaller)
+      Downloading pywin32_ctypes-0.2.3-py3-none-any.whl.metadata (3.9 kB)
+    Collecting pyinstaller-hooks-contrib>=2025.5 (from pyinstaller)
+      Downloading pyinstaller_hooks_contrib-2025.6-py3-none-any.whl.metadata (16 kB)
+    Collecting packaging>=22.0 (from pyinstaller)
+      Downloading packaging-25.0-py3-none-any.whl.metadata (3.3 kB)
+    Downloading pyinstaller-6.14.2-py3-none-win_amd64.whl (1.4 MB)
+       ---------------------------------------- 1.4/1.4 MB 19.3 MB/s eta 0:00:00
+    Downloading packaging-25.0-py3-none-any.whl (66 kB)
+    Downloading pefile-2023.2.7-py3-none-any.whl (71 kB)
+    Downloading pyinstaller_hooks_contrib-2025.6-py3-none-any.whl (440 kB)
+    Downloading pywin32_ctypes-0.2.3-py3-none-any.whl (30 kB)
+    Downloading setuptools-80.9.0-py3-none-any.whl (1.2 MB)
+       ---------------------------------------- 1.2/1.2 MB 19.3 MB/s eta 0:00:00
+    Downloading altgraph-0.17.4-py2.py3-none-any.whl (21 kB)
+    Installing collected packages: altgraph, setuptools, pywin32-ctypes, pefile, packaging, pyinstaller-hooks-contrib, pyinstaller
+    Successfully installed altgraph-0.17.4 packaging-25.0 pefile-2023.2.7 pyinstaller-6.14.2 pyinstaller-hooks-contrib-2025.6 pywin32-ctypes-0.2.3 setuptools-80.9.0
+    ```
+1. Install the Python requirements: `> python -m pip install -r requirements.txt`
+    ```
+    Collecting click==8.1.8 (from -r requirements.txt (line 1))
+      Downloading click-8.1.8-py3-none-any.whl.metadata (2.3 kB)
+    Requirement already satisfied: colorama==0.4.6 in c:\users\wdagutilityaccount\scoop\apps\python\current\lib\site-packages (from -r requirements.txt (line 2)) (0.4.6)
+    Collecting filelock==3.17.0 (from -r requirements.txt (line 3))
+      Downloading filelock-3.17.0-py3-none-any.whl.metadata (2.9 kB)
+    Collecting mutagen==1.47.0 (from -r requirements.txt (line 4))
+      Downloading mutagen-1.47.0-py3-none-any.whl.metadata (1.7 kB)
+    Collecting platformdirs==4.3.6 (from -r requirements.txt (line 5))
+      Downloading platformdirs-4.3.6-py3-none-any.whl.metadata (11 kB)
+    Collecting plexapi==4.16.1 (from -r requirements.txt (line 6))
+      Downloading PlexAPI-4.16.1-py3-none-any.whl.metadata (9.3 kB)
+    Collecting pyyaml==6.0.2 (from -r requirements.txt (line 7))
+      Downloading PyYAML-6.0.2-cp313-cp313-win_amd64.whl.metadata (2.1 kB)
+    Requirement already satisfied: requests in c:\users\wdagutilityaccount\scoop\apps\python\current\lib\site-packages (from plexapi==4.16.1->-r requirements.txt (line 6)) (2.32.4)
+    Requirement already satisfied: charset_normalizer<4,>=2 in c:\users\wdagutilityaccount\scoop\apps\python\current\lib\site-packages (from requests->plexapi==4.16.1->-r requirements.txt (line 6)) (3.4.2)
+    Requirement already satisfied: idna<4,>=2.5 in c:\users\wdagutilityaccount\scoop\apps\python\current\lib\site-packages (from requests->plexapi==4.16.1->-r requirements.txt (line 6)) (3.10)
+    Requirement already satisfied: urllib3<3,>=1.21.1 in c:\users\wdagutilityaccount\scoop\apps\python\current\lib\site-packages (from requests->plexapi==4.16.1->-r requirements.txt (line 6)) (2.5.0)
+    Requirement already satisfied: certifi>=2017.4.17 in c:\users\wdagutilityaccount\scoop\apps\python\current\lib\site-packages (from requests->plexapi==4.16.1->-r requirements.txt (line 6)) (2025.7.14)
+    Downloading click-8.1.8-py3-none-any.whl (98 kB)
+    Downloading filelock-3.17.0-py3-none-any.whl (16 kB)
+    Downloading mutagen-1.47.0-py3-none-any.whl (194 kB)
+    Downloading platformdirs-4.3.6-py3-none-any.whl (18 kB)
+    Downloading PlexAPI-4.16.1-py3-none-any.whl (165 kB)
+    Downloading PyYAML-6.0.2-cp313-cp313-win_amd64.whl (156 kB)
+    Installing collected packages: pyyaml, platformdirs, mutagen, filelock, click, plexapi
+    Successfully installed click-8.1.8 filelock-3.17.0 mutagen-1.47.0 platformdirs-4.3.6 plexapi-4.16.1 pyyaml-6.0.2
+    ```
+1. Clone or copy the PMRS project from GitHub.
+1. Change to the new project folder: `> cd PlexMusicRatingsSync`
+1. Use PyInstaller to bundle a Windows executable: `> pyinstaller --clean pmrs.exe.spec`
+    ```
+    180 INFO: PyInstaller: 6.14.2, contrib hooks: 2025.6
+    180 INFO: Python: 3.13.5
+    203 INFO: Platform: Windows-11-10.0.26100-SP0
+    203 INFO: Python environment: C:\Users\WDAGUtilityAccount\scoop\apps\python\current
+    207 INFO: Removing temporary files and cleaning cache in C:\Users\WDAGUtilityAccount\AppData\Local\pyinstaller
+    208 INFO: Module search paths (PYTHONPATH):
+    ['C:\\Users\\WDAGUtilityAccount\\scoop\\apps\\python\\current\\Scripts\\pyinstaller.exe',
+     'C:\\Users\\WDAGUtilityAccount\\scoop\\apps\\python\\current\\python313.zip',
+     'C:\\Users\\WDAGUtilityAccount\\scoop\\apps\\python\\current\\DLLs',
+     'C:\\Users\\WDAGUtilityAccount\\scoop\\apps\\python\\current\\Lib',
+     'C:\\Users\\WDAGUtilityAccount\\scoop\\apps\\python\\3.13.5',
+     'C:\\Users\\WDAGUtilityAccount\\scoop\\apps\\python\\current',
+     'C:\\Users\\WDAGUtilityAccount\\scoop\\apps\\python\\current\\Lib\\site-packages',
+     'C:\\Users\\WDAGUtilityAccount\\scoop\\apps\\python\\current\\Lib\\site-packages\\setuptools\\_vendor',
+     'C:\\Users\\WDAGUtilityAccount\\Desktop\\PlexMusicRatingsSync\\src']
+    425 INFO: Appending 'datas' from .spec
+    425 INFO: checking Analysis
+    ... BLAH BLAH ...
+    11359 INFO: checking EXE
+    11359 INFO: Building EXE because EXE-00.toc is non existent
+    11360 INFO: Building EXE from EXE-00.toc
+    11360 INFO: Copying bootloader EXE to C:\Users\WDAGUtilityAccount\Desktop\PlexMusicRatingsSync\dist\pmrs.exe
+    11363 INFO: Copying icon to EXE
+    11366 INFO: Copying 0 resources to EXE
+    11367 INFO: Embedding manifest in EXE
+    11369 INFO: Appending PKG archive to EXE
+    11374 INFO: Fixing EXE headers
+    11424 INFO: Building EXE from EXE-00.toc completed successfully.
+    11425 INFO: Build complete! The results are available in: C:\Users\WDAGUtilityAccount\Desktop\PlexMusicRatingsSync\dist
+    ```
+
+#### Validate Windows Executable
+
+ 1. Sanity test: `> .\dist\pmrs.exe`
+    ```
+    Usage: pmrs.exe [OPTIONS] COMMAND [ARGS]...
+
+      PlexMusicRatingsSync keeps your Plex music ratings in sync with your audio files
+
+    Options:
+      --version  Show program version and exit
+      --help     Show this help message and exit
+
+    Commands:
+      export  Export ratings from Plex to audio files.
+      import  Import ratings from audio files into Plex.
+      info    Show system information and configuration paths.
+      sync    Synchronize ratings between Plex and supported audio files.
+    ```
+1. Basic test: `> .\dist\pmrs.exe --version`
+    ```
+    PlexMusicRatingsSync v1.1.3
+    ```
+1. Test output: `> .\dist\pmrs.exe --help`
+    ```
+    Usage: pmrs.exe [OPTIONS] COMMAND [ARGS]...
+
+      PlexMusicRatingsSync keeps your Plex music ratings in sync with your audio
+      files
+
+    Options:
+      --version  Show program version and exit
+      --help     Show this help message and exit
+
+    Commands:
+      export  Export ratings from Plex to audio files.
+      import  Import ratings from audio files into Plex.
+      info    Show system information and configuration paths.
+      sync    Synchronize ratings between Plex and supported audio files.
+    ```
+1. Test bundled configuration file template: `> .\dist\pmrs.exe info`
+    ```
+    PlexMusicRatingsSync Version: 1.1.3
+    Python Version: 3.13.5
+    PlexAPI Version: 4.16.1
+    Config Directory: C:\Users\WDAGUtilityAccount\AppData\Local\PlexMusicRatingsSync\PlexMusicRatingsSync
+    Config File: C:\Users\WDAGUtilityAccount\AppData\Local\PlexMusicRatingsSync\PlexMusicRatingsSync\config.yml
+    Log Directory: C:\Users\WDAGUtilityAccount\AppData\Local\PlexMusicRatingsSync\PlexMusicRatingsSync\Logs
+    Log File: C:\Users\WDAGUtilityAccount\AppData\Local\PlexMusicRatingsSync\PlexMusicRatingsSync\Logs\PlexMusicRatingsSync.log
+    ```
+1. If you built in the Windows Sandbox, copy the executable (`.\dist\pmrs.exe`) to the host.
+
+#### Using the Windows Executable
+
+1. Determine path the Plex Server uses to access the music files.
+(Substitute your Plex user token for "YOUR_TOKEN" and,
+perhaps, the server's IP address for `localhost`.)
+    ```powershell
+    > python -c "from plexapi.server import PlexServer; `
+    baseurl = 'http://localhost:32400'; `
+    token   = 'YOUR_TOKEN'; `
+    plex    = PlexServer(baseurl, token); `
+    print(plex.library.section('Music').locations)"
+
+    ['/volume1/music']
+    ```
+1. PMRS will access the music files with the same path the Plex Server uses.
+You can create a junction point to mirror how the Plex Server accesses the music files.
+PMRS uses this to scan your Plex music library. For example, if the Plex Server is
+running on a NAS, you might need to do this:
+    ```powershell
+    > md \volume1
+    > mklink /j "\volume1\music" "C:\OneDrive\Music"
+    Junction created for D:\volume1\music <<===>> C:\OneDrive\Music
+    ```
+1. Run PMRS to create the configuration file: `> .\dist\pmrs.exe info`
+1. Use the displayed path to edit the configuration file.
+
 ### Automated Synchronization
 
 You can automate the synchronization process to run periodically using different methods depending on your installation.
