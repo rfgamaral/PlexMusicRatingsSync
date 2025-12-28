@@ -51,6 +51,12 @@ Email identifiers for players known to use the primary rating map with half-star
 support.
 """
 
+_AIFF_FORMATS = {".aif": "AIFF", ".aiff": "AIFF"}
+"""
+Maps file extensions to their format names for AIFF audio files that use ID3 tags for
+metadata storage.
+"""
+
 _VORBIS_FORMATS = {".flac": "FLAC", ".ogg": "OGG", ".opus": "OPUS"}
 """
 Maps file extensions to their format names for audio files that use Vorbis Comments
@@ -388,11 +394,12 @@ def get_rating_from_file(file_path):
     if file_path.endswith(".mp3"):
         return _get_rating_from_mp3(file_path)
 
-    if file_path.endswith((".aif", ".aiff")):
-        return _get_rating_from_aiff(file_path)
-
     if file_path.endswith(".m4a"):
         return _get_rating_from_m4a(file_path)
+
+    for ext, file_type in _AIFF_FORMATS.items():
+        if file_path.endswith(ext):
+            return _get_rating_from_aiff(file_path)
 
     for ext, file_type in _VORBIS_FORMATS.items():
         if file_path.endswith(ext):
@@ -409,11 +416,12 @@ def set_rating_to_file(file_path, plex_rating):
     if file_path.endswith(".mp3"):
         _set_rating_to_mp3(file_path, plex_rating)
 
-    if file_path.endswith((".aif", ".aiff")):
-        _set_rating_to_aiff(file_path, plex_rating)
-
     if file_path.endswith(".m4a"):
         _set_rating_to_m4a(file_path, plex_rating)
+
+    for ext, file_type in _AIFF_FORMATS.items():
+        if file_path.endswith(ext):
+            _set_rating_to_aiff(file_path, plex_rating)
 
     for ext, file_type in _VORBIS_FORMATS.items():
         if file_path.endswith(ext):
