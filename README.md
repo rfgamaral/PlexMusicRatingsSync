@@ -151,6 +151,39 @@ docker compose run --rm plex-music-ratings-sync sync
     docker compose run --rm plex-music-ratings-sync export
     ```
 
+### Environment Variables
+
+You can override YAML configuration values using environment variables. This is useful for container orchestrators (Kubernetes, Docker Swarm), CI/CD pipelines, or any environment where managing config files is impractical.
+
+| Variable | Description | Example |
+|---|---|---|
+| `PMRS_PLEX_URL` | Plex server URL | `http://192.168.1.100:32400` |
+| `PMRS_PLEX_TOKEN` | Plex authentication token | `your-plex-token` |
+| `PMRS_PLEX_LIBRARIES` | Comma-separated library names | `Music,Audiobooks` |
+
+**Precedence:** The YAML config file is always loaded first. Environment variables, when set, override the corresponding YAML values. A log message is emitted when overrides are active.
+
+> [!NOTE]
+> The path-related variables `PMRS_CONFIG_DIR`, `PMRS_LOG_DIR`, and `PMRS_CACHE_DIR` control directory locations and are separate from the config override variables above.
+
+Example usage with Docker Compose:
+
+```yaml
+services:
+  plex-music-ratings-sync:
+    image: ghcr.io/rfgamaral/plex-music-ratings-sync
+    container_name: plex-music-ratings-sync
+    network_mode: bridge
+    restart: on-failure:2
+    environment:
+      - PMRS_PLEX_URL=http://192.168.1.100:32400
+      - PMRS_PLEX_TOKEN=your-plex-token
+      - PMRS_PLEX_LIBRARIES=Music,Audiobooks
+    volumes:
+      - /host/app/data:/app/data
+      - /host/plex/music:/plex/music
+```
+
 ### Automated Synchronization
 
 You can automate the synchronization process to run periodically using different methods depending on your installation.
@@ -265,6 +298,12 @@ The cache is automatically managed and requires no configuration. If you need to
 - `--clear-cache`: Delete the cached data before processing
 
 The cache file location is shown in the output of `plex-music-ratings-sync info`.
+
+### Can I use environment variables instead of the config file?
+
+Yes. You can set `PMRS_PLEX_URL`, `PMRS_PLEX_TOKEN`, and `PMRS_PLEX_LIBRARIES` to override the corresponding values from the YAML config file. The YAML file is still loaded (and created from template if it doesn't exist), but environment variables take precedence when set. A log message confirms when overrides are active.
+
+This is especially useful for Docker, Kubernetes, or any deployment where injecting environment variables is easier than mounting config files.
 
 ## License
 
