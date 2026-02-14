@@ -1,10 +1,8 @@
+from mutagen import File as MutagenFile
 from mutagen.aiff import AIFF
-from mutagen.flac import FLAC
 from mutagen.id3 import ID3, POPM
 from mutagen.mp3 import MP3
 from mutagen.mp4 import MP4
-from mutagen.oggopus import OggOpus
-from mutagen.oggvorbis import OggVorbis
 
 from plex_music_ratings_sync.logger import log_debug, log_error, log_info
 from plex_music_ratings_sync.state import is_dry_run
@@ -57,10 +55,10 @@ Maps file extensions to their format names for AIFF audio files that use ID3 tag
 metadata storage.
 """
 
-_VORBIS_FORMATS = {".flac": "FLAC", ".ogg": "OGG", ".opus": "OPUS"}
+_XIPH_FORMATS = {".flac": "FLAC", ".ogg": "OGG", ".opus": "OPUS"}
 """
-Maps file extensions to their format names for audio files that use Vorbis Comments
-for metadata storage.
+Maps file extensions to their format names for Xiph audio formats (FLAC/OGG/OPUS)
+that use Vorbis Comments for metadata storage.
 """
 
 
@@ -256,30 +254,31 @@ def _set_rating_to_aiff(file_path, plex_rating):
         log_error(f"▪ Failed to write rating for AIFF file: {e}", 4)
 
 
-def _get_rating_from_vorbis(file_path, file_type):
+def _get_rating_from_xiph(file_path, file_type):
     """
-    Read rating from a file using Vorbis Comments (FLAC/OGG/OPUS) RATING tag. Converts
-    the rating (10-100 scale) to Plex's 1-10 scale.
+    Read rating from a Xiph audio file's (FLAC/OGG/OPUS) Vorbis Comments RATING tag.
+    Converts the rating (10-100 scale) to Plex's 1-10 scale.
     """
     try:
-        if file_type == "FLAC":
-            audio = FLAC(file_path)
-        elif file_type == "OGG":
-            audio = OggVorbis(file_path)
-        else:  # OPUS
-            audio = OggOpus(file_path)
+        audio = MutagenFile(file_path)
+
+        if audio is None:
+            log_error(
+                f"▪ Failed to read rating from {file_type} file: unsupported codec", 4
+            )
+            return None
 
         rating_raw = audio.get("RATING")
 
         if rating_raw:
-            vorbis_rating = int(
+            xiph_rating = int(
                 rating_raw[0] if isinstance(rating_raw, list) else rating_raw
             )
 
-            if vorbis_rating == 0:
+            if xiph_rating == 0:
                 rating = None
             else:
-                rating = max(1, min(10, round(vorbis_rating / 10)))
+                rating = max(1, min(10, round(xiph_rating / 10)))
 
             log_debug(f"▸ Successfully read {file_type} rating: **{rating}**", 4)
 
@@ -293,18 +292,18 @@ def _get_rating_from_vorbis(file_path, file_type):
         return None
 
 
-def _set_rating_to_vorbis(file_path, plex_rating, file_type):
+def _set_rating_to_xiph(file_path, plex_rating, file_type):
     """
-    Write rating to a file using Vorbis Comments (FLAC/OGG/OPUS) RATING tag.
-    Converts the Plex rating (1-10 scale) to Vorbis Comments' 10-100 scale.
+    Write rating to a Xiph audio file's (FLAC/OGG/OPUS) Vorbis Comments RATING tag.
+    Converts the Plex rating (1-10 scale) to the 10-100 scale.
     """
     try:
         if plex_rating is None or plex_rating == 0:
-            vorbis_rating = "0"
+            xiph_rating = "0"
         else:
-            vorbis_rating = str(max(10, min(100, plex_rating * 10)))
+            xiph_rating = str(max(10, min(100, plex_rating * 10)))
 
-        log_rating = f"**{plex_rating}** (**{plex_rating / 2}**) ⇒ **{vorbis_rating}**"
+        log_rating = f"**{plex_rating}** (**{plex_rating / 2}**) ⇒ **{xiph_rating}**"
 
         if is_dry_run():
             log_info(
@@ -312,14 +311,16 @@ def _set_rating_to_vorbis(file_path, plex_rating, file_type):
                 4,
             )
         else:
-            if file_type == "FLAC":
-                audio = FLAC(file_path)
-            elif file_type == "OGG":
-                audio = OggVorbis(file_path)
-            else:  # OPUS
-                audio = OggOpus(file_path)
+            audio = MutagenFile(file_path)
 
-            audio["RATING"] = vorbis_rating
+            if audio is None:
+                log_error(
+                    f"▪ Failed to write rating for {file_type} file: unsupported codec",
+                    4,
+                )
+                return
+
+            audio["RATING"] = xiph_rating
             audio.save()
 
             log_info(f"▸ Successfully rated {file_type} file: {log_rating}", 4)
@@ -401,9 +402,9 @@ def get_rating_from_file(file_path):
         if file_path.endswith(ext):
             return _get_rating_from_aiff(file_path)
 
-    for ext, file_type in _VORBIS_FORMATS.items():
+    for ext, file_type in _XIPH_FORMATS.items():
         if file_path.endswith(ext):
-            return _get_rating_from_vorbis(file_path, file_type)
+            return _get_rating_from_xiph(file_path, file_type)
 
     return None
 
@@ -423,9 +424,9 @@ def set_rating_to_file(file_path, plex_rating):
         if file_path.endswith(ext):
             _set_rating_to_aiff(file_path, plex_rating)
 
-    for ext, file_type in _VORBIS_FORMATS.items():
+    for ext, file_type in _XIPH_FORMATS.items():
         if file_path.endswith(ext):
-            _set_rating_to_vorbis(file_path, plex_rating, file_type)
+            _set_rating_to_xiph(file_path, plex_rating, file_type)
 
 
 def get_rating_from_plex(plex_item):
