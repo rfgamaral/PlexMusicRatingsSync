@@ -1,7 +1,7 @@
 from os import getenv
 from pathlib import Path
 
-from platformdirs import user_config_dir, user_log_dir
+from platformdirs import user_cache_dir, user_config_dir, user_log_dir
 
 from plex_music_ratings_sync import APP_NAME
 
@@ -14,6 +14,16 @@ def get_config_dir():
 def get_config_file_path():
     """Return the path to the user config file."""
     return get_config_dir() / "config.yml"
+
+
+def get_cache_dir():
+    """Return the path to the cache directory."""
+    return Path(getenv("PMRS_CACHE_DIR", user_cache_dir(APP_NAME)))
+
+
+def get_cache_file_path():
+    """Return the path to the rating cache file."""
+    return get_cache_dir() / "cache.json"
 
 
 def get_log_dir():

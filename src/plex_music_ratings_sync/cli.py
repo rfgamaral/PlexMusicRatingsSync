@@ -7,9 +7,11 @@ from plex_music_ratings_sync import APP_DESCRIPTION, APP_NAME, __version__
 from plex_music_ratings_sync.config import init_config
 from plex_music_ratings_sync.lock import acquire_process_lock
 from plex_music_ratings_sync.logger import init_logging, log_info, log_warning
-from plex_music_ratings_sync.state import set_dry_run
+from plex_music_ratings_sync.state import set_clear_cache, set_dry_run, set_no_cache
 from plex_music_ratings_sync.sync import RatingSync
 from plex_music_ratings_sync.util.paths import (
+    get_cache_dir,
+    get_cache_file_path,
     get_config_dir,
     get_config_file_path,
     get_log_dir,
@@ -68,11 +70,23 @@ def show_info():
     click.echo(f"Config File: {_colorize_path(get_config_file_path())}")
     click.echo(f"Log Directory: {_colorize_path(get_log_dir())}")
     click.echo(f"Log File: {_colorize_path(get_log_file_path())}")
+    click.echo(f"Cache Directory: {_colorize_path(get_cache_dir())}")
+    click.echo(f"Cache File: {_colorize_path(get_cache_file_path())}")
 
 
 @cli.command("sync")
 @click.option(
     "--dry-run", is_flag=True, help="Simulates syncing ratings without applying changes"
+)
+@click.option(
+    "--no-cache",
+    is_flag=True,
+    help="Skip the file rating cache and read all files from disk",
+)
+@click.option(
+    "--clear-cache",
+    is_flag=True,
+    help="Clear the file rating cache before processing",
 )
 @click.option(
     "--quiet",
@@ -86,7 +100,7 @@ def show_info():
     help="Show detailed debug information",
     callback=_validate_verbosity_flags,
 )
-def sync_ratings(dry_run, quiet, verbose):
+def sync_ratings(dry_run, no_cache, clear_cache, quiet, verbose):
     """
     Synchronize ratings between Plex and supported audio files.
 
@@ -100,6 +114,8 @@ def sync_ratings(dry_run, quiet, verbose):
     log_info(f"{APP_NAME} v{__version__}")
 
     set_dry_run(dry_run)
+    set_no_cache(no_cache)
+    set_clear_cache(clear_cache)
 
     try:
         RatingSync().sync_ratings()
@@ -113,6 +129,16 @@ def sync_ratings(dry_run, quiet, verbose):
     "--dry-run", is_flag=True, help="Simulates importing ratings without making changes"
 )
 @click.option(
+    "--no-cache",
+    is_flag=True,
+    help="Skip the file rating cache and read all files from disk",
+)
+@click.option(
+    "--clear-cache",
+    is_flag=True,
+    help="Clear the file rating cache before processing",
+)
+@click.option(
     "--quiet",
     is_flag=True,
     help="Suppress all output except errors",
@@ -124,7 +150,7 @@ def sync_ratings(dry_run, quiet, verbose):
     help="Show detailed debug information",
     callback=_validate_verbosity_flags,
 )
-def import_ratings(dry_run, quiet, verbose):
+def import_ratings(dry_run, no_cache, clear_cache, quiet, verbose):
     """
     Import ratings from audio files into Plex.
 
@@ -138,6 +164,8 @@ def import_ratings(dry_run, quiet, verbose):
     log_info(f"{APP_NAME} v{__version__}")
 
     set_dry_run(dry_run)
+    set_no_cache(no_cache)
+    set_clear_cache(clear_cache)
 
     try:
         RatingSync().import_ratings()
@@ -151,6 +179,16 @@ def import_ratings(dry_run, quiet, verbose):
     "--dry-run", is_flag=True, help="Simulates exporting ratings without making changes"
 )
 @click.option(
+    "--no-cache",
+    is_flag=True,
+    help="Skip the file rating cache and read all files from disk",
+)
+@click.option(
+    "--clear-cache",
+    is_flag=True,
+    help="Clear the file rating cache before processing",
+)
+@click.option(
     "--quiet",
     is_flag=True,
     help="Suppress all output except errors",
@@ -162,7 +200,7 @@ def import_ratings(dry_run, quiet, verbose):
     help="Show detailed debug information",
     callback=_validate_verbosity_flags,
 )
-def export_ratings(dry_run, quiet, verbose):
+def export_ratings(dry_run, no_cache, clear_cache, quiet, verbose):
     """
     Export ratings from Plex to audio files.
 
@@ -176,6 +214,8 @@ def export_ratings(dry_run, quiet, verbose):
     log_info(f"{APP_NAME} v{__version__}")
 
     set_dry_run(dry_run)
+    set_no_cache(no_cache)
+    set_clear_cache(clear_cache)
 
     try:
         RatingSync().export_ratings()

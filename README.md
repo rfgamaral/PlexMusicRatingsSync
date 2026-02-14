@@ -255,6 +255,17 @@ The synchronization follows these rules:
 
 This ensures your ratings stay consistent while working within the technical constraints of both systems.
 
+### How does the file rating cache work?
+
+To speed up repeated runs, PlexMusicRatingsSync caches file ratings in a local JSON file. On each run, it checks whether each audio file's modification time and size match the cached values. If they match, the cached rating is used instead of re-reading the file — this significantly reduces I/O, especially for large libraries on network storage (NAS).
+
+The cache is automatically managed and requires no configuration. If you need to bypass or reset it:
+
+- `--no-cache`: Skip the cache entirely and read all files from disk
+- `--clear-cache`: Delete the cached data before processing
+
+The cache file location is shown in the output of `plex-music-ratings-sync info`.
+
 ## License
 
 The use of this source code is governed by an MIT-style license that can be found in the [LICENSE](LICENSE) file.
