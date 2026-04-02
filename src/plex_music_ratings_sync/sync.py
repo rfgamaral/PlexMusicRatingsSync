@@ -55,6 +55,7 @@ class RatingSync:
             "plex_updates": 0,
             "skipped_not_found": 0,
             "skipped_unsupported": 0,
+            "changelog": [],
         }
 
     def _process_item(self, item, mode="sync"):
@@ -111,6 +112,7 @@ class RatingSync:
             if plex_rating != file_rating:
                 set_rating_to_plex(item, file_rating)
                 self._stats["plex_updates"] += 1
+                self._stats["changelog"].append(f"Plex[{plex_rating}] ← File[{file_rating}] - {item.title} ({file_path.name})")
             else:
                 log_debug("▸ Plex rating already matches file", 4)
         elif mode == "export" and plex_rating is not None:
@@ -118,6 +120,7 @@ class RatingSync:
                 set_rating_to_file(str(file_path), plex_rating)
                 self._update_cache_after_write(file_path, plex_rating)
                 self._stats["file_updates"] += 1
+                self._stats["changelog"].append(f"Plex[{plex_rating}] → File[{file_rating}] - {item.title} ({file_path.name})")
             else:
                 log_debug("▸ File rating already matches Plex", 4)
         elif mode == "sync":
@@ -126,9 +129,11 @@ class RatingSync:
                     set_rating_to_file(str(file_path), plex_rating)
                     self._update_cache_after_write(file_path, plex_rating)
                     self._stats["file_updates"] += 1
+                    self._stats["changelog"].append(f"Plex[{plex_rating}] → File[{file_rating}] - {item.title} ({file_path.name})")
                 elif file_rating is not None:
                     set_rating_to_plex(item, file_rating)
                     self._stats["plex_updates"] += 1
+                    self._stats["changelog"].append(f"Plex[{plex_rating}] ← File[{file_rating}] - {item.title} ({file_path.name})")
             else:
                 log_debug("▸ Ratings are already in sync", 4)
 
@@ -216,6 +221,13 @@ class RatingSync:
                 f"Skipped: {fmt(self._stats['skipped_not_found'])} not found, {fmt(self._stats['skipped_unsupported'])} unsupported",
                 1,
             )
+        
+        if self._stats["changelog"]:
+            log_info("Changelog:")
+            for change in self._stats["changelog"]:
+                log_info(
+                    f"{change}",
+                )
 
     def sync_ratings(self):
         """Synchronize ratings between Plex and supported audio files."""
